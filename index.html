@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio | Reynoso C. Bañaga Jr.</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons for aesthetic vectors -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        
+        /* 1. CRITICAL FIX: Remove problematic overflow properties that conflict with position: sticky */
+        /* Set margin and padding to zero for consistency */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            /* Removed overflow-x: hidden from here */
+        }
+
+        body {
+            min-width: 320px; 
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* TRUE BLACK BACKGROUND */
+            color: #c9d1d9; /* Light text */
+            scroll-behavior: smooth; 
+        }
+
+        /* 2. NAVIGATION BAR FIX */
+        #navbar {
+            /* Explicitly force the navbar to be sticky and stay at the top (top: 0) */
+            position: sticky !important; 
+            top: 0 !important;
+            /* Force hardware acceleration, sometimes fixes sticky issues */
+            transform: translateZ(0); 
+            /* Added a subtle but visible shadow to clearly show when it sticks */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- SCROLL REVEAL ANIMATIONS --- */
+        /* Note: Animations are kept minimal to avoid horizontal overflow issues. */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px); 
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform;
+        }
+
+        .slide-hidden-left {
+            opacity: 0;
+            transform: translateX(-10px); 
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            will-change: opacity, transform;
+        }
+
+        .slide-hidden-right {
+            opacity: 0;
+            transform: translateX(10px); 
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            will-change: opacity, transform;
+        }
+
+        /* The class added by JS when element enters viewport */
+        .animate-active {
+            opacity: 1;
+            transform: translateY(0) translateX(0);
+        }
+
+        /* Active navigation link indicator */
+        .nav-link.active {
+            border-bottom: 2px solid #58a6ff; 
+            color: #ffffff;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #21262d;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #30363d;
+        }
+        
+        /* Disable hover scaling on small screens (mobile) to prevent temporary overflow */
+        @media (max-width: 767px) {
+            .skill-card:hover, .project-card:hover {
+                transform: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar - Ito ang may 'sticky top-0' at Z-Index 50 -->
+    <nav id="navbar" class="sticky top-0 z-50 bg-[#161b22] shadow-xl backdrop-blur-sm bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#home" class="nav-scroll-link text-2xl font-bold text-[#58a6ff] hover:text-white transition duration-300">
+                        R<span class="text-white">B</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#home" class="nav-link nav-scroll-link text-sm font-medium hover:text-white transition duration-300 px-3 py-2 rounded-lg">Home</a>
+                        <a href="#about" class="nav-link nav-scroll-link text-sm font-medium hover:text-white transition duration-300 px-3 py-2 rounded-lg">About Me</a>
+                        <a href="#skills" class="nav-link nav-scroll-link text-sm font-medium hover:text-white transition duration-300 px-3 py-2 rounded-lg">Skills</a>
+                        <a href="#projects" class="nav-link nav-scroll-link text-sm font-medium hover:text-white transition duration-300 px-3 py-2 rounded-lg">Projects</a>
+                        <a href="#contact" class="nav-link nav-scroll-link text-sm font-medium hover:text-white transition duration-300 px-3 py-2 rounded-lg">Contact</a>
+                    </div>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-[#21262d] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="mobile-nav-link nav-scroll-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#21262d]">Home</a>
+                <a href="#about" class="mobile-nav-link nav-scroll-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#21262d]">About Me</a>
+                <a href="#skills" class="mobile-nav-link nav-scroll-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#21262d]">Skills</a>
+                <a href="#projects" class="mobile-nav-link nav-scroll-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#21262d]">Projects</a>
+                <a href="#contact" class="mobile-nav-link nav-scroll-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#21262d]">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper, constrained for desktop viewing experience -->
+    <main class="w-full max-w-full mx-auto">
+
+        <!-- 1. Hero / Landing Page Section -->
+        <!-- Added huge vertical padding for large screens: lg:py-64 -->
+        <section id="home" class="px-4 py-24 sm:py-32 lg:py-48 min-h-screen flex items-center justify-center max-w-full mx-auto">
+            <!-- Content container: max-w-6xl for better centering on huge screens -->
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center w-full">
+                <!-- Hero Text (Slides Left on Scroll) -->
+                <div id="hero-text" class="slide-hidden-left order-2 md:order-1 text-center md:text-left">
+                    <p class="text-lg sm:text-xl text-[#58a6ff] mb-2 font-semibold">Hello, I'm</p>
+                    <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold leading-tight text-white mb-4">
+                        Reynoso C. Bañaga Jr.
+                    </h1>
+                    <p class="text-xl sm:text-2xl md:text-3xl text-gray-400 mb-6">
+                        A passionate <span class="text-white font-medium">Photographer</span> and <span class="text-white font-medium">Software Developer</span>.
+                    </p>
+                    <a href="#projects" class="nav-scroll-link inline-block px-8 py-3 bg-[#58a6ff] text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105">
+                        View Projects
+                        <i data-lucide="arrow-right" class="w-5 h-5 inline-block ml-2"></i>
+                    </a>
+                </div>
+
+                <!-- Portrait Image (Slides Right on Scroll) -->
+                <div id="hero-image" class="slide-hidden-right order-1 md:order-2 flex justify-center">
+                    <div class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#58a6ff] p-2 shadow-[0_0_40px_rgba(88,166,255,0.4)]">
+                        <img src="profile.png"
+                             alt="Professional Portrait"
+                             class="w-full h-full object-cover rounded-full border-4 border-[#000000] transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. About Me Section -->
+        <!-- Increased desktop padding: lg:py-32 -->
+        <section id="about" class="px-4 py-16 sm:py-24 lg:py-32 border-t border-[#21262d] max-w-full mx-auto">
+             <div class="max-w-6xl mx-auto">
+                <h2 class="reveal-on-scroll text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-white">About Me</h2>
+
+                <div class="max-w-4xl mx-auto space-y-10 sm:space-y-12">
+                    
+                    <!-- Main Bio Card (Fades Up) -->
+                    <div class="reveal-on-scroll bg-[#161b22] p-6 sm:p-8 md:p-12 rounded-2xl shadow-xl border border-[#21262d] text-center">
+                        <!-- Portrait -->
+                        <div class="flex justify-center mb-6 sm:mb-8">
+                            <img src="profile.png"
+                                alt="About Me Profile"
+                                onclick="openModal('profile.png')"
+                                class="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full p-1 shadow-xl border-4 border-[#58a6ff]/30 cursor-pointer transition transform md:hover:scale-105"
+                                title="Click to zoom">
+                        </div>
+
+                        <!-- Full Bio Text -->
+                        <p class="text-base sm:text-lg leading-relaxed text-gray-300 text-left">
+                            I’m <b>Reynoso C. Bañaga Jr.</b>, but you can call me <b>Rey</b>. I’m currently a second-year Bachelor of Science in Computer Science student at Norzagaray College. As I begin my journey in the world of programming, I’m learning the basics of languages like C++, Java, C#, VB.NET, and MySQL. I enjoy discovering how code works and how it can be used to create simple but useful projects. I’m excited to keep learning and improving as I explore more about technology and software development.
+                            <br><br>
+                            Aside from coding, I’m also interested in photography and photo editing using Adobe Photoshop and Lightroom. I like capturing moments and enhancing them through creative editing. My goal is to combine my interest in programming and photography to build creative projects that reflect both my technical skills and artistic ideas.
+                        </p>
+                    </div>
+
+                    <!-- Education and Achievements Section (Slides In from Sides) -->
+                    <!-- Increased gap for desktop: lg:gap-12 -->
+                    <div class="grid md:grid-cols-2 gap-8 lg:gap-12 overflow-hidden">
+                        
+                        <!-- Education Details (Slides Left) -->
+                        <div class="slide-hidden-left p-6 sm:p-8 bg-[#161b22] rounded-2xl border border-[#21262d] shadow-xl md:hover:scale-[1.03] transition duration-300">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-6 text-[#58a6ff] flex items-center">
+                                <i data-lucide="graduation-cap" class="w-6 h-6 mr-3"></i> Education
+                            </h3>
+                            <div class="space-y-6">
+                                
+                                <!-- 1. Degree Entry -->
+                                <div class="border-l-4 border-[#58a6ff] pl-4">
+                                    <p class="font-semibold text-white text-lg sm:text-xl">B.S. Computer Science (2nd Year)</p>
+                                    <p class="text-gray-300 font-medium">Norzagaray College</p>
+                                    <p class="text-xs sm:text-sm text-gray-400 mt-1">2024 - Present | Focus: OOP, Data Structures, Database Systems</p>
+                                </div>
+                                
+                                <!-- 2. Senior High School -->
+                                <div class="border-l-4 border-[#21262d] pl-4">
+                                    <p class="font-semibold text-white text-lg sm:text-xl">Senior High School (SHS)</p>
+                                    <p class="text-gray-300 font-medium">Norzagaray National High School - 300760</p>
+                                    <p class="text-xs sm:text-sm text-gray-400 mt-1">2023 - 2024 | Strand: TVL - Information Communication Technology</p>
+                                </div>
+                                
+                                <!-- 3. Junior High School -->
+                                <div class="border-l-4 border-[#21262d] pl-4">
+                                    <p class="font-semibold text-white text-lg sm:text-xl">Junior High School (JHS)</p>
+                                    <p class="text-gray-300 font-medium">Norzagaray National High School - 300760</p>
+                                    <p class="text-xs sm:text-sm text-gray-400 mt-1">2019 - 2022</p>
+                                </div>
+
+                                <!-- 4. Elementary School -->
+                                <div class="border-l-4 border-[#21262d] pl-4">
+                                    <p class="font-semibold text-white text-lg sm:text-xl">Elementary School</p>
+                                    <p class="text-gray-300 font-medium">Norzagaray Elementary School - 104952</p>
+                                    <p class="text-xs sm:text-sm text-gray-400 mt-1">2012 - 2018</p>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <!-- School Achievements (Slides Right) -->
+                        <div class="slide-hidden-right p-6 sm:p-8 bg-[#161b22] rounded-2xl border border-[#21262d] shadow-xl md:hover:scale-[1.03] transition duration-300">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-6 text-[#58a6ff] flex items-center">
+                                <i data-lucide="award" class="w-6 h-6 mr-3"></i> School Achievements
+                            </h3>
+                            <ul class="space-y-3 text-gray-300 text-sm sm:text-base">
+                                <li class="flex items-start">
+                                    <i data-lucide="film" class="w-5 h-5 mr-3 text-red-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Participation: RAITE 2025 in Micro Short Film.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="star" class="w-5 h-5 mr-3 text-yellow-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Recognition: Dean's Lister (2nd Semester, 1st Year) with GWA 1.*2.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="cpu" class="w-5 h-5 mr-3 text-cyan-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Appreciation: ChainQuest "Join the quest, Discover your Web3 Potential".</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="code" class="w-5 h-5 mr-3 text-green-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Participation in Programming (CS WEEK 2024).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="camera" class="w-5 h-5 mr-3 text-pink-400 flex-shrink-0 mt-1"></i>
+                                    <span>Member of Creative Team, Position: Photographer.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="ribbon" class="w-5 h-5 mr-3 text-purple-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Recognition: 91 with Honors (during Senior High School).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-blue-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Conduct Award.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="book-open" class="w-5 h-5 mr-3 text-orange-400 flex-shrink-0 mt-1"></i>
+                                    <span>Certificate of Recognition: "Best Research Paper Award" (Reletionship of Computer Assisted Instructions to the Academic Achievement...).</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3. Skills Section -->
+        <!-- Increased desktop padding: lg:py-32 -->
+        <section id="skills" class="px-4 py-16 sm:py-24 lg:py-32 border-t border-[#21262d] max-w-full mx-auto">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="reveal-on-scroll text-3xl sm:text-4xl font-bold text-center mb-10 sm:mb-12 text-white">Technical & Creative Skills</h2>
+
+                <div class="reveal-on-scroll flex justify-center mb-8">
+                    <!-- Skills tab wrapper is now max-w-full to handle large number of buttons -->
+                    <div class="flex flex-wrap justify-center gap-3 sm:gap-4 p-2 bg-[#161b22] rounded-full shadow-lg border border-[#21262d] max-w-full">
+                        <button class="skill-tab active-tab px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full bg-[#58a6ff] text-white transition duration-300" data-category="all">All Skills</button>
+                        <button class="skill-tab px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full text-gray-300 hover:bg-[#21262d] transition duration-300" data-category="programming">Programming</button>
+                        <button class="skill-tab px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full text-gray-300 hover:bg-[#21262d] transition duration-300" data-category="database">Database</button>
+                        <button class="skill-tab px-4 sm:px-6 py-2 text-xs sm:text-sm font-medium rounded-full text-gray-300 hover:bg-[#21262d] transition duration-300" data-category="creative">Creative Tools</button>
+                    </div>
+                </div>
+
+                <!-- Skills Container: uses lg:grid-cols-4 and xl:grid-cols-5 for extra wide screens -->
+                <div id="skills-container" class="reveal-on-scroll grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8 mx-auto">
+                    <!-- Skills content goes here -->
+                </div>
+            </div>
+
+            <template id="skill-template">
+                <div class="skill-card bg-[#161b22] p-6 sm:p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 hover:bg-[#21262d] border border-[#21262d] flex flex-col items-center text-center space-y-3 sm:space-y-4 transform md:hover:scale-[1.05]">
+                    <div class="skill-icon-placeholder text-[#58a6ff] w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16"></div>
+                    <h4 class="skill-name text-base sm:text-lg md:text-xl font-semibold text-white"></h4>
+                </div>
+            </template>
+        </section>
+
+        <!-- 4. Projects Section (Mix of Slide Left/Right and Fade Up) -->
+        <!-- Increased desktop padding: lg:py-32 -->
+        <section id="projects" class="px-4 py-16 sm:py-24 lg:py-32 border-t border-[#21262d] max-w-full mx-auto">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="reveal-on-scroll text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-white">My Projects</h2>
+
+                <!-- Grid is responsive: 1 column on mobile, 2 columns on md, 3 columns on lg. Increased gap to lg:gap-12 -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 overflow-hidden">
+
+                    <!-- Project Card 1 (Slides Left) -->
+                    <div class="project-card slide-hidden-left bg-[#161b22] rounded-xl overflow-hidden shadow-2xl transition duration-300 md:hover:scale-[1.03] border border-[#21262d]">
+                        <img src="hryb.png"
+                            alt="HRYB Inventory Management System"
+                            class="w-full h-40 sm:h-48 object-cover">
+                        <div class="p-5 sm:p-6">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-2 text-white">HRYB Inventory Management System</h3>
+                            <p class="text-gray-400 mb-4 text-sm sm:text-base">HRYB Inventory Management System with POS is my first graphical user interface (GUI) project built using C# Windows Forms. This system was developed during my CSC4 subject in my first year of college. It’s designed to help manage products, categories, and sales transactions, integrating an Inventory Management System with a basic Point of Sale (POS) module.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-900 text-blue-300">C#</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-900 text-green-300">MYSQL</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Canva</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-600 text-white">Desktop App</span>
+                            </div>
+                            <a href="projects/inventory" class="text-[#58a6ff] hover:text-white font-medium flex items-center text-sm">
+                                View Source Code
+                                <i data-lucide="external-link" class="w-4 h-4 ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 2 (Fades Up) -->
+                    <div class="project-card reveal-on-scroll bg-[#161b22] rounded-xl overflow-hidden shadow-2xl transition duration-300 md:hover:scale-[1.03] border border-[#21262d]">
+                        <img src="library.png"
+                            alt="NC Library Management System"
+                            class="w-full h-40 sm:h-48 object-cover">
+                        <div class="p-5 sm:p-6">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-2 text-white">NC Library Management System</h3>
+                            <p class="text-gray-400 mb-4 text-sm sm:text-base">This NC Library Management System is the second system I developed during my first year of college. It was created as a requirement for my CSC3 subject and built using VB.NET Windows Forms. The system is designed to automate essential library functions such as borrowing and returning books, tracking inventory, managing student records, and handling penalties for overdue returns.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-900 text-blue-300">VBNET</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-900 text-green-300">MYSQL</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Canva</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-600 text-white">Desktop App</span>
+                            </div>
+                            <a href="projects/library1" class="text-[#58a6ff] hover:text-white font-medium flex items-center text-sm">
+                                View Source Code
+                                <i data-lucide="external-link" class="w-4 h-4 ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 3 (Slides Right) -->
+                    <div class="project-card slide-hidden-right bg-[#161b22] rounded-xl overflow-hidden shadow-2xl transition duration-300 md:hover:scale-[1.03] border border-[#21262d]">
+                        <img src="library2.png"
+                            alt="NC Library Management System"
+                            class="w-full h-40 sm:h-48 object-cover">
+                        <div class="p-5 sm:p-6">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-2 text-white">NC Library Management System</h3>
+                            <p class="text-gray-400 mb-4 text-sm sm:text-base">NC Library Management System Version 2 is an upgraded library management solution I developed during my second year of college using VB.NET Windows Forms. It streamlines key library tasks—borrowing and returning books, tracking inventory, managing student records, and handling overdue penalties. This version introduces batch uploads for students and books, QR code scanning for student IDs, and barcode scanning for books, making the system faster, smarter, and easier to use for both students and staff.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-900 text-blue-300">VBNET</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-900 text-green-300">MYSQL</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Canva</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-600 text-white">Desktop App</span>
+                            </div>
+                            <a href="projects/library2" class="text-[#58a6ff] hover:text-white font-medium flex items-center text-sm">
+                                View Source Code
+                                <i data-lucide="external-link" class="w-4 h-4 ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Contact Section -->
+        <!-- Increased desktop padding: lg:py-32 -->
+        <section id="contact" class="px-4 py-16 sm:py-24 lg:py-32 border-t border-[#21262d] max-w-full mx-auto">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="reveal-on-scroll text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-white">Get In Touch</h2>
+
+                <div class="reveal-on-scroll text-center">
+                    <p class="text-lg sm:text-xl text-gray-300 mb-8 sm:mb-10">
+                        I'm always open to new opportunities. Feel free to connect with me!
+                    </p>
+
+                    <!-- Grid is responsive: 2 columns on mobile, 4 columns on md -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                        <!-- Email -->
+                        <a href="mailto:reynosobanaga@gmail.com" class="contact-link group p-4 rounded-xl bg-[#21262d] hover:bg-[#58a6ff] transition duration-300 transform hover:-translate-y-1 shadow-lg">
+                            <i data-lucide="mail" class="w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-2 text-[#58a6ff] group-hover:text-white transition duration-300"></i>
+                            <p class="text-xs sm:text-sm font-semibold text-gray-300 group-hover:text-white">Email</p>
+                        </a>
+                        <!-- GitHub -->
+                        <a href="https://github.com/ryphgh" target="_blank" class="contact-link group p-4 rounded-xl bg-[#21262d] hover:bg-[#58a6ff] transition duration-300 transform hover:-translate-y-1 shadow-lg">
+                            <i data-lucide="github" class="w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-2 text-[#58a6ff] group-hover:text-white transition duration-300"></i>
+                            <p class="text-xs sm:text-sm font-semibold text-gray-300 group-hover:text-white">GitHub</p>
+                        </a>
+                        <!-- Facebook -->
+                        <a href="https://facebook.com/ryphgh" target="_blank" class="contact-link group p-4 rounded-xl bg-[#21262d] hover:bg-[#58a6ff] transition duration-300 transform hover:-translate-y-1 shadow-lg">
+                            <i data-lucide="facebook" class="w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-2 text-[#58a6ff] group-hover:text-white transition duration-300"></i>
+                            <p class="text-xs sm:text-sm font-semibold text-gray-300 group-hover:text-white">Facebook</p>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://instagram.com/ryphgh" target="_blank" class="contact-link group p-4 rounded-xl bg-[#21262d] hover:bg-[#58a6ff] transition duration-300 transform hover:-translate-y-1 shadow-lg">
+                            <i data-lucide="instagram" class="w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-2 text-[#58a6ff] group-hover:text-white transition duration-300"></i>
+                            <p class="text-xs sm:text-sm font-semibold text-gray-300 group-hover:text-white">Instagram</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Image Zoom Modal -->
+    <div id="image-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm transition-opacity duration-300" onclick="closeModal()">
+        <!-- Modal wrapper is highly fluid -->
+        <div class="relative w-11/12 max-w-full max-h-[95vh] p-2 sm:p-4 flex items-center justify-center" onclick="event.stopPropagation()">
+            <!-- Close Button -->
+            <button class="absolute top-0 right-0 m-4 text-white text-3xl opacity-80 hover:opacity-100 transition duration-200 z-50 p-2 rounded-full bg-gray-800/50 hover:bg-gray-800" onclick="closeModal()">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <!-- Zoomed Image Content (Ensures it fits within screen boundaries) -->
+            <img id="modal-image-content" 
+                 src="" 
+                 alt="Zoomed Profile Image" 
+                 class="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-xl shadow-2xl transition transform scale-100">
+        </div>
+    </div>
+
+
+    <script>
+        // Data for Skills Section (Name, Category, and now Icon identifier)
+        const skillsData = [
+            // Programming
+            { name: "Java", category: "programming", icon: "coffee" },
+            { name: "C++", category: "programming", icon: "terminal" },
+            { name: "C#", category: "programming", icon: "code" },
+            { name: "VBNET", category: "programming", icon: "layout-dashboard" },
+            // Database
+            { name: "MySQL", category: "database", icon: "database" },
+            // Creative Tools
+            { name: "Adobe Photoshop", category: "creative", icon: "image" },
+            { name: "Adobe Lightroom", category: "creative", icon: "aperture" },
+            { name: "Capcut", category: "creative", icon: "video" },
+            { name: "Canva", category: "creative", icon: "paint-roller" },
+        ];
+
+        // --- Global Modal Functions ---
+        function openModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-image-content');
+            
+            img.setAttribute('src', imageSrc);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; 
+            
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = ''; // Restore default scrolling
+        }
+
+
+        // --- Event Listeners ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons on static content
+            lucide.createIcons();
+            
+            // --- Utility Functions ---
+
+            function renderSkills(category) {
+                const container = document.getElementById('skills-container');
+                const template = document.getElementById('skill-template');
+                
+                if (!template) {
+                    console.error("Template element with ID 'skill-template' not found.");
+                    return;
+                }
+
+                container.innerHTML = ''; 
+
+                const filteredSkills = category === 'all'
+                    ? skillsData
+                    : skillsData.filter(skill => skill.category === category);
+
+                filteredSkills.forEach(skill => {
+                    const clone = document.importNode(template.content, true);
+                    
+                    clone.querySelector('.skill-name').textContent = skill.name;
+                    
+                    const iconPlaceholder = clone.querySelector('.skill-icon-placeholder');
+                    iconPlaceholder.innerHTML = `<i data-lucide="${skill.icon}" class="w-full h-full"></i>`;
+                    
+                    container.appendChild(clone);
+                });
+                
+                lucide.createIcons();
+            }
+
+            // Function to handle smooth scrolling for all links with href="#..."
+            function handleSmoothScroll(event) {
+                event.preventDefault();
+                const targetId = event.currentTarget.getAttribute('href');
+                if (targetId && targetId.startsWith('#')) {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+                
+                // Close mobile menu after click
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+
+
+            // 1. Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // 2. Attach Smooth Scroll Handler to all relevant links
+            document.querySelectorAll('.nav-scroll-link').forEach(anchor => {
+                anchor.addEventListener('click', handleSmoothScroll);
+            });
+
+            // 3. Skills Filtering and Rendering
+            const skillTabs = document.querySelectorAll('.skill-tab');
+            skillTabs.forEach(tab => {
+                tab.addEventListener('click', (event) => {
+                    const category = event.target.dataset.category;
+                    
+                    // Update active tab styling
+                    skillTabs.forEach(t => {
+                        t.classList.remove('active-tab', 'bg-[#58a6ff]', 'text-white');
+                        t.classList.add('text-gray-300', 'hover:bg-[#21262d]');
+                    });
+                    event.target.classList.add('active-tab', 'bg-[#58a6ff]', 'text-white');
+                    event.target.classList.remove('text-gray-300', 'hover:bg-[#21262d]');
+
+                    // Render filtered skills
+                    renderSkills(category);
+                });
+            });
+
+            // Initial render of all skills when the page loads
+            renderSkills('all');
+            
+            // 4. Scroll Reveal & Nav Link Tracking
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            const animatedElements = document.querySelectorAll('.reveal-on-scroll, .slide-hidden-left, .slide-hidden-right');
+
+            const options = {
+                root: null,
+                threshold: 0.15, 
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Animation Logic
+                    const target = entry.target;
+                    const isAnimated = target.classList.contains('reveal-on-scroll') || 
+                                       target.classList.contains('slide-hidden-left') || 
+                                       target.classList.contains('slide-hidden-right');
+
+                    if (isAnimated) {
+                        if (entry.isIntersecting) {
+                            target.classList.add('animate-active');
+                        } else {
+                            target.classList.remove('animate-active'); 
+                        }
+                    }
+
+                    // Nav Link Logic (Section tracking)
+                    if (target.tagName === 'SECTION' && entry.isIntersecting) {
+                        const id = target.getAttribute('id');
+                        const targetLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                        
+                        if (entry.intersectionRatio >= 0.15 || entry.boundingClientRect.top < window.innerHeight / 2) {
+                            navLinks.forEach(link => link.classList.remove('active'));
+                            if (targetLink) {
+                                targetLink.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            }, options);
+
+            sections.forEach(section => observer.observe(section));
+            animatedElements.forEach(el => observer.observe(el));
+        });
+    </script>
+
+</body>
+</html>
